@@ -164,6 +164,29 @@ function _exec(basedir) {
     };
 }
 
+/**
+ * Creates the protocol handler for the `execWithArgs:` protocol
+ * @param args
+ * @param baseDir
+ * @returns {Function}
+ */
+function _execWithArgs(baseDir){
+    var require = _require(baseDir);
+    return function execWithArgsHandler(value, args) {
+        var tuple, module, method;
+
+        tuple = value.split('#');
+        module = require(tuple[0]);
+        method = tuple[1] ? module[tuple[1]] : module;
+
+        if (thing.isFunction(method)) {
+            return method(args);
+        }
+
+        throw new Error('execWithArgs: unable to locate function in ' + value);
+    };
+}
+
 
 /**
  * Creates the protocol handler for the `glob:` protocol
@@ -200,5 +223,6 @@ module.exports = {
     env:     _env,
     require: _require,
     exec:    _exec,
+    execWithArgs: _execWithArgs,
     glob:    _glob
 };
